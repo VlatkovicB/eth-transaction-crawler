@@ -1,0 +1,1 @@
+export const WEI_VALUE = 1000000000000000000

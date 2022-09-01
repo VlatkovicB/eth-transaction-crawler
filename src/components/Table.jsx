@@ -1,5 +1,9 @@
 import React from "react"
 
+import BigNumber from "bignumber.js"
+
+import { WEI_VALUE } from "../constants"
+
 const Table = ({ transactions }) => {
   return (
     <table className="table table-striped">
@@ -14,14 +18,18 @@ const Table = ({ transactions }) => {
         </tr>
       </thead>
       <tbody>
-        {transactions.map(({ blockNumber, from, value, timeStamp }, i) => (
-          <tr key={blockNumber + "" + i}>
-            <td className="col-1">{timeStamp}</td>
-            <td className="col-1">{blockNumber}</td>
-            <td className="col-1">{value}</td>
-            <td className="col d-flex justify-content-end">{from}</td>
-          </tr>
-        ))}
+        {transactions &&
+          transactions?.length > 0 &&
+          transactions.map(({ blockNumber, from, value, timeStamp }, i) => (
+            <tr key={blockNumber + "" + i}>
+              <td className="col-1">{timeStamp}</td>
+              <td className="col-1">{blockNumber}</td>
+              <td className="col-1">
+                {BigNumber(value).div(WEI_VALUE).toFixed(8)}
+              </td>
+              <td className="col d-flex justify-content-end">{from}</td>
+            </tr>
+          ))}
       </tbody>
     </table>
   )
