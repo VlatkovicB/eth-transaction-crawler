@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 import UrlBuilder from "./UrlBuilder"
+import Table from "./components/Table"
+import Loader from "./components/Loader"
+import Error from "./components/Error"
 
 const App = () => {
   const [transactions, setTransactions] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState()
 
   useEffect(() => {
     getTransactions()
@@ -16,34 +21,24 @@ const App = () => {
       .setAction("txlist")
       .build()
 
-    const {
-      data: { result },
-    } = await axios.get(url)
-
-    setTransactions(result)
+    try {
+      setLoading(true)
+      const {
+        data: { result },
+      } = await axios.get(url)
+      setTransactions(result)
+    } catch (error) {
+      console.error(error)
+      setError(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div className="p-5">
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Block Number</th>
-            <th scope="col">Time</th>
-            <th scope="col">From</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map(({ blockNumber, from, value, timeStamp }, i) => (
-            <tr key={blockNumber + "" + i}>
-              <td>{timeStamp}</td>
-              <td>{blockNumber}</td>
-              <td>{value}</td>
-              <td>{from}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {loading ? <Loader /> : <Table transactions={transactions} />}
+      {!!error && <Error error={error} />}
     </div>
   )
 }
