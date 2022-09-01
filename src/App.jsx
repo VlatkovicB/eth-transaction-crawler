@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
+import UrlBuilder from "./UrlBuilder"
 
 const App = () => {
   const [transactions, setTransactions] = useState([])
@@ -10,7 +11,10 @@ const App = () => {
 
   const getTransactions = async () => {
     const address = "0xaa7a9ca87d3694b5755f213b5d04094b8d0f0a6f"
-    const url = `https://api.etherscan.io/api?module=account&action=txlist&startblock=9000000&endblock=9999999&page=1&offset=50&sort=asc&address=${address}&apiKey=${process.env.REACT_APP_ETHSCAN_API_KEY}`
+    const url = new UrlBuilder(address)
+      .setModule("account")
+      .setAction("txlist")
+      .build()
 
     const {
       data: { result },
