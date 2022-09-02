@@ -18,7 +18,7 @@ const Search = ({
     return () => {
       document.removeEventListener("keydown", listener)
     }
-  }, [])
+  })
 
   return (
     <div className="row">

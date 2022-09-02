@@ -22,7 +22,9 @@ const Table = ({ transactions }) => {
           transactions?.length > 0 &&
           transactions.map(({ blockNumber, from, value, timeStamp }, i) => (
             <tr key={blockNumber + "" + i}>
-              <td className="col-1">{timeStamp}</td>
+              <td className="col-1">
+                {new Date(timeStamp * 1000).toUTCString()}
+              </td>
               <td className="col-1">{blockNumber}</td>
               <td className="col-1">
                 {BigNumber(value).div(WEI_VALUE).toFixed(8)}
