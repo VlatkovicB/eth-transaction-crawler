@@ -1,9 +1,26 @@
 # ETH Transaction Crawler
 
+## Instalation
+
+To instal everything necessary run:
+
+```
+npm i
+```
+
+Create .env file in root folder and add API key for <i>etherscan.io</i>
+To start run:
+
+```
+npm start
+```
+
+## Task
+
 Create an application that will allow a user to view transaction data from the Ethereum blockchain associated with a specific wallet address W that the user inputs, starting with block B. The application should get information on:
 
-- wallets (addresses) and
-- amounts of ETH associated with transactions made to and from the given wallet W and
+- wallets (addresses)
+- amounts of ETH associated with transactions made to and from the given wallet W
 - show them in a simple human-readable way (ideally, through a web page).
 
 The application should collect and display ALL transaction data starting from the given block B.
