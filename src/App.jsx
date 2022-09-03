@@ -1,5 +1,6 @@
 import axios from "axios"
 import BigNumber from "bignumber.js"
+import moment from "moment"
 
 import { useEffect, useState } from "react"
 
@@ -11,6 +12,8 @@ import Search from "./components/Search"
 import Input from "./components/Input"
 import { DATE_REGEX, MESSAGE_TYPES, WEI_VALUE } from "./constants"
 
+const { REACT_APP_DEFAULT_STARTBLOCK, REACT_APP_DEFAULT_ENDBLOCK } = process.env
+
 const App = () => {
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(false)
@@ -19,8 +22,8 @@ const App = () => {
   const [date, setDate] = useState(null)
   const [data, setData] = useState({
     address: "0xaa7a9ca87d3694b5755f213b5d04094b8d0f0a6f",
-    startblock: 0,
-    endblock: 9999999,
+    startblock: Number(REACT_APP_DEFAULT_STARTBLOCK),
+    endblock: Number(REACT_APP_DEFAULT_ENDBLOCK),
   })
 
   useEffect(() => {
@@ -43,15 +46,21 @@ const App = () => {
       } = await axios.get(url)
 
       if (Array.isArray(result)) {
-        calculateAndSetBalance(result)
-
         if (!!date) {
-          result = result.filter(
-            ({ timeStamp }) =>
-              timeStamp > date / 1000 && timeStamp < date / 1000 + 60 * 60 * 24
-          )
+          result = result.filter(({ timeStamp }) => {
+            let dateToCompare = Math.floor(date / 1000)
+            return (
+              moment
+                .utc(timeStamp, "X")
+                .isAfter(moment.utc(dateToCompare, "X")) &&
+              moment
+                .utc(timeStamp, "X")
+                .isBefore(moment.utc(dateToCompare, "X").add(1, "day"))
+            )
+          })
         }
 
+        calculateAndSetBalance(result)
         setTransactions(result)
       } else {
         setMessage({ message: result, type: MESSAGE_TYPES.DANGER })
@@ -81,9 +90,14 @@ const App = () => {
   const changeDate = (e) => {
     const { value } = e.target
     if (DATE_REGEX.test(value)) {
-      const [year, month, day] = value.split("-")
+      const [year, month, date] = value.split("-")
 
-      setDate(Date.UTC(year, month - 1, day))
+      setDate(
+        moment()
+          .year(year)
+          .month(month - 1)
+          .date(date)
+      )
       setMessage(null)
     } else {
       setMessage({
